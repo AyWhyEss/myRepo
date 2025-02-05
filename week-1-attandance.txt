@@ -1,0 +1,4 @@
+
+
+In my Data Representation module, I was taught how computers represent and process information in the form of binary numbers (0s and 1s). I was taught that any numbers, text, images, and sound can be expressed digitally. I was taught about various number systems like decimal, binary, and hexadecimal, and also taught to convert from one system to another. I was taught about how text is represented using ASCII and Unicode.
+
