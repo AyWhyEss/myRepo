@@ -1,0 +1,5 @@
+
+I learned that Computer Science is concerned with problem-solving and algorithm design—step-by-step solution to a problem. A problem is computable if there exists an algorithm for it.
+Programming converts algorithms into a programming language, which must be capable of handling sequential actions, decisions, and loops. Algorithms must be unambiguous, computable, result-oriented, and bounded.
+I also explored different algorithmic approaches, how they vary in efficiency, and key considerations like inputs, outputs, termination conditions, and error handling.
+Lastly, I discovered flowcharts, which graphically depict algorithms and assist in organizing logic prior to coding.
