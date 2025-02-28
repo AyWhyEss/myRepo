@@ -1,0 +1,43 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdbool.h>
+bool isPrime(int n) {
+    if(n < 2)
+        return false;
+    for (int i = 2; i <= sqrt(n); i++) {
+        if (n % i == 0)
+            return false;
+    }
+    return true;
+}
+int main() {
+    int choice;
+    printf("Welcome to the Prime Number Utility!\n");
+    printf("Choose an option:\n");
+    printf(" 1. Check if a specific number is prime\n");
+    printf(" 2. List all prime numbers up to N\n");
+    printf("Enter your choice (1 or 2): ");
+    scanf("%d", &choice);
+    if (choice == 1) {
+        int num;
+        printf("Please enter an integer to check: ");
+        scanf("%d", &num);
+        if (isPrime(num))
+            printf("Great! %d is a prime number.\n", num);
+        else
+            printf("Sorry, %d is not a prime number.\n", num);
+    } else if (choice == 2) {
+        int N;
+        printf("Please enter the upper limit N: ");
+        scanf("%d", &N);
+        printf("Prime numbers up to %d are:\n", N);
+        for (int i = 2; i <= N; i++) {
+            if (isPrime(i))
+                printf("%d ", i);
+        }
+        printf("\n");
+    } else {
+        printf("Invalid option selected.\n");
+    }
+    return 0;
+}

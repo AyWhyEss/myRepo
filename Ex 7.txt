@@ -1,0 +1,17 @@
+#include <stdio.h>
+int main() {
+    int num, original, reversed = 0;
+    printf("Welcome to the Palindrome Checker!\n");
+    printf("Please enter an integer: ");
+    scanf("%d", &num);
+    original = num;
+    while (num) {
+        reversed = reversed * 10 + num % 10;
+        num /= 10;
+    }
+    if (original == reversed)
+        printf("Good news! %d is a palindrome.\n", original);
+    else
+        printf("Unfortunately, %d is not a palindrome.\n", original);
+    return 0;
+}
