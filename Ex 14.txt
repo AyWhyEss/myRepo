@@ -1,0 +1,27 @@
+#include <stdio.h>
+int main() {
+    int low = 1, high = 100, mid, guessCount = 0;
+    char response;
+    printf("Welcome! Think of a number between 1 and 100.\n");
+    printf("I will try to guess it. After each guess, respond with:\n");
+    printf("  'h' if my guess is too high,\n");
+    printf("  'l' if my guess is too low,\n");
+    printf("  'c' if my guess is correct.\n");
+    while (low <= high) {
+        mid = (low + high) / 2;
+        printf("Is your number %d? (h/l/c): ", mid);
+        scanf(" %c", &response);
+        guessCount++;
+        if (response == 'c') {
+            printf("Yay! I guessed your number in %d attempts!\n", guessCount);
+            break;
+        } else if (response == 'h') {
+            high = mid - 1;
+        } else if (response == 'l') {
+            low = mid + 1;
+        } else {
+            printf("Invalid response. Please enter h, l, or c.\n");
+        }
+    }
+    return 0;
+}
