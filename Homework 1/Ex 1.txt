@@ -1,0 +1,33 @@
+// exercise1.c - Friendly Arithmetic Calculator using switch-case
+#include <stdio.h>
+
+int main() {
+    int firstNumber, secondNumber;
+    char operator;
+    
+    printf("Welcome to the Arithmetic Calculator!\n");
+    printf("Please enter an expression (e.g. 5 + 6): ");
+    scanf("%d %c %d", &firstNumber, &operator, &secondNumber);
+    
+    switch(operator) {
+        case '+':
+            printf("Result: %d + %d = %d\n", firstNumber, secondNumber, firstNumber + secondNumber);
+            break;
+        case '-':
+            printf("Result: %d - %d = %d\n", firstNumber, secondNumber, firstNumber - secondNumber);
+            break;
+        case '*':
+            printf("Result: %d * %d = %d\n", firstNumber, secondNumber, firstNumber * secondNumber);
+            break;
+        case '/':
+            if(secondNumber != 0)
+                printf("Result: %d / %d = %.3f\n", firstNumber, secondNumber, (float)firstNumber / secondNumber);
+            else
+                printf("Oops! Division by zero is not allowed.\n");
+            break;
+        default:
+            printf("Sorry, the operator '%c' is not supported.\n", operator);
+    }
+    printf("Thank you for using the calculator.\n");
+    return 0;
+}

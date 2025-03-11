@@ -1,0 +1,25 @@
+#include <stdio.h>
+#include <stdbool.h>
+int main() {
+    int count;
+    printf("Welcome! Let's check if your sequence is sorted.\n");
+    printf("How many numbers are in your sequence? ");
+    scanf("%d", &count);
+    int sequence[count];
+    printf("Enter %d numbers:\n", count);
+    for (int i = 0; i < count; i++) {
+        scanf("%d", &sequence[i]);
+    }
+    bool ascending = true, descending = true;
+    for (int i = 1; i < count; i++) {
+        if (sequence[i] < sequence[i - 1])
+            ascending = false;
+        if (sequence[i] > sequence[i - 1])
+            descending = false;
+    }
+    if (ascending || descending)
+        printf("Yes, the sequence is sorted.\n");
+    else
+        printf("No, the sequence is not sorted.\n");
+    return 0;
+}

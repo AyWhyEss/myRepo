@@ -1,0 +1,13 @@
+#include <stdio.h>
+int main() {
+    int N, sum = 0;
+    printf("Welcome! This program sums all multiples of 3 or 5 below a number N.\n");
+    printf("Please enter a number N (between 1 and 1000): ");
+    scanf("%d", &N);
+    for (int i = 1; i < N; i++) {
+        if (i % 3 == 0 || i % 5 == 0)
+            sum += i;
+    }
+    printf("The sum of multiples of 3 or 5 below %d is: %d\n", N, sum);
+    return 0;
+}
