@@ -1,0 +1,26 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+void compress(char *s){
+    if(!s)return;
+    int n = strlen(s);
+    if(n == 0)return;
+    int read = 0, write = 0;
+    while(read < n){
+        char c = s[read];
+        int count = 0;
+        while(read < n && s[read] == c){ count++; read++; }
+        s[write++] = c;
+        int len = snprintf(s + write, n - write + 1, "%d", count);
+        write += len;
+    }
+    s[write] = '\0';
+}
+int main(void){
+    char s[100];
+    fgets(s, sizeof(s), stdin);
+    s[strcspn(s, "\n")] = 0;
+    compress(s);
+    printf("%s", s);
+    return 0;
+}

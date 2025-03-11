@@ -1,0 +1,23 @@
+#include <stdio.h>
+#include <string.h>
+void reverse(char *s){
+    if(!s)return;
+    int len = strlen(s);
+    if(len == 0)return;
+    char *p = s, *q = s + len - 1;
+    while(p < q){
+        char t = *p;
+        *p = *q;
+        *q = t;
+        p++;
+        q--;
+    }
+}
+int main(void){
+    char s[100];
+    fgets(s, sizeof(s), stdin);
+    s[strcspn(s, "\n")] = 0;
+    reverse(s);
+    printf("%s", s);
+    return 0;
+}

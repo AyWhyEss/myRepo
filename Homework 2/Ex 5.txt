@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <pthread.h>
+#include <sys/time.h>
+int M, N, P;
+int **A, **B, **C;
+typedef struct { int row; } thread_data;
+void *multiply_row(void *arg){
+    thread_data *data = (thread_data*) arg;
+    int i = data->row;
+    struct timeval start, end;
+    gettimeofday(&start, NULL);
+    for(int j = 0; j < P; j++){
+        C[i][j] = 0;
+        for(int k = 0; k < N; k++){
+            C[i][j] += A[i][k] * B[k][j];
+        }
+    }
+    gettimeofday(&end, NULL);
+    long sec = end.tv_sec - start.tv_sec;
+    long usec = end.tv_usec - start.tv_usec;
+    double elapsed = sec * 1000.0 + usec / 1000.0;
+    printf("Thread for row %d took %f ms\n", i, elapsed);
+    pthread_exit(NULL);
+}
+int main(void){
+    printf("Enter M, N, P: ");
+    scanf("%d %d %d", &M, &N, &P);
+    A = malloc(M * sizeof(int*));
+    B = malloc(N * sizeof(int*));
+    C = malloc(M * sizeof(int*));
+    for(int i = 0; i < M; i++){
+        A[i] = malloc(N * sizeof(int));
+        C[i] = malloc(P * sizeof(int));
+    }
+    for(int i = 0; i < N; i++){
+        B[i] = malloc(P * sizeof(int));
+    }
+    for(int i = 0; i < M; i++){
+        for(int j = 0; j < N; j++){
+            A[i][j] = rand() % 10;
+        }
+    }
+    for(int i = 0; i < N; i++){
+        for(int j = 0; j < P; j++){
+            B[i][j] = rand() % 10;
+        }
+    }
+    pthread_t *threads = malloc(M * sizeof(pthread_t));
+    thread_data *tdata = malloc(M * sizeof(thread_data));
+    struct timeval start_par, end_par;
+    gettimeofday(&start_par, NULL);
+    for(int i = 0; i < M; i++){
+        tdata[i].row = i;
+        pthread_create(&threads[i], NULL, multiply_row, &tdata[i]);
+    }
+    for(int i = 0; i < M; i++){
+        pthread_join(threads[i], NULL);
+    }
+    gettimeofday(&end_par, NULL);
+    long sec_par = end_par.tv_sec - start_par.tv_sec;
+    long usec_par = end_par.tv_usec - start_par.tv_usec;
+    double elapsed_par = sec_par * 1000.0 + usec_par / 1000.0;
+    printf("Parallel multiplication took %f ms\n", elapsed_par);
+    int **C_seq = malloc(M * sizeof(int*));
+    for(int i = 0; i < M; i++){
+        C_seq[i] = malloc(P * sizeof(int));
+    }
+    struct timeval start_seq, end_seq;
+    gettimeofday(&start_seq, NULL);
+    for(int i = 0; i < M; i++){
+        for(int j = 0; j < P; j++){
+            C_seq[i][j] = 0;
+            for(int k = 0; k < N; k++){
+                C_seq[i][j] += A[i][k] * B[k][j];
+            }
+        }
+    }
+    gettimeofday(&end_seq, NULL);
+    long sec_seq = end_seq.tv_sec - start_seq.tv_sec;
+    long usec_seq = end_seq.tv_usec - start_seq.tv_usec;
+    double elapsed_seq = sec_seq * 1000.0 + usec_seq / 1000.0;
+    printf("Sequential multiplication took %f ms\n", elapsed_seq);
+    for(int i = 0; i < M; i++){
+        free(A[i]);
+        free(C[i]);
+        free(C_seq[i]);
+    }
+    for(int i = 0; i < N; i++){
+        free(B[i]);
+    }
+    free(A);
+    free(B);
+    free(C);
+    free(C_seq);
+    free(threads);
+    free(tdata);
+    return 0;
+}

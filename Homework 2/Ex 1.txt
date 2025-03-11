@@ -1,0 +1,16 @@
+#include <stdio.h>
+#include <stdlib.h>
+int main(void){
+    FILE *fp;
+    char c;
+    int row = 1, col = 0;
+    fp = fopen(__FILE__, "r");
+    if(!fp){ perror("Error"); return 1; }
+    while((c = fgetc(fp)) != EOF){
+        col++;
+        if(c == '\n'){ row++; col = 0; }
+        if(c == '{' || c == '}') printf("%c found at row %d, col %d\n", c, row, col);
+    }
+    fclose(fp);
+    return 0;
+}
