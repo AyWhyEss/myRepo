@@ -1,26 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-void compress(char *s){
-    if(!s)return;
+
+// Compress a string
+void compress(char *s) {
+    // Validate input: for null do nothing
+    if (!s)
+        return;
+    
+    // Get the length of the string
     int n = strlen(s);
-    if(n == 0)return;
+    if (n == 0)
+        return;
+    
+    // Initialize read and write
     int read = 0, write = 0;
-    while(read < n){
+    
+    // Process string
+    while (read < n) {
         char c = s[read];
-        int count = 0;
-        while(read < n && s[read] == c){ count++; read++; }
+        int count = 0;    
+        
+        // Count char repeat
+        while (read < n && s[read] == c) {
+            count++;
+            read++;
+        }
+        
+        // Write the char to out
         s[write++] = c;
+        
+        // Convert the count into a string
         int len = snprintf(s + write, n - write + 1, "%d", count);
-        write += len;
+        write += len;  // Move the write pointer
     }
     s[write] = '\0';
 }
-int main(void){
+
+int main(void) {
+    // Create a buffer for user input
     char s[100];
+    
+    // Read the input
     fgets(s, sizeof(s), stdin);
+    
+    // Remove the new line char
     s[strcspn(s, "\n")] = 0;
+    
+    // Compress the string
     compress(s);
+    
+    // Print
     printf("%s", s);
+    
     return 0;
 }

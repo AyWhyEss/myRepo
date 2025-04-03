@@ -1,16 +1,40 @@
 #include <stdio.h>
 #include <stdlib.h>
-int main(void){
+
+int main(void) {
+    // Declare
     FILE *fp;
+    
+    // Variable to store
     char c;
+    
+    // Variables to track
     int row = 1, col = 0;
+    
+    // Open the current source file
     fp = fopen(__FILE__, "r");
-    if(!fp){ perror("Error"); return 1; }
-    while((c = fgetc(fp)) != EOF){
-        col++;
-        if(c == '\n'){ row++; col = 0; }
-        if(c == '{' || c == '}') printf("%c found at row %d, col %d\n", c, row, col);
+    if (!fp) {
+        // If opening the file fails, output an error message and exit
+        perror("Error");
+        return 1;
     }
+    
+    // Read each character from the file until the end
+    while ((c = fgetc(fp)) != EOF) {
+        col++; // Increment column caunt for each character
+        
+        // When a new line is encountered, increment the row and reset column count
+        if (c == '\n') {
+            row++;
+            col = 0;
+        }
+        
+        // Check for opening and closing braces
+        if (c == '{' || c == '}')
+            printf("%c found at row %d, col %d\n", c, row, col);
+    }
+    
+    // Close the file
     fclose(fp);
     return 0;
 }

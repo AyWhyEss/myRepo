@@ -1,33 +1,66 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-int main(void){
+
+int main(void) {
+    // Declare a file pointer to open the csv file
     FILE *fp;
+    
+    // Buffer to store each line read from the csv
     char buffer[1024];
+    
+    // Variables to store the column number and search
     int colnum;
     char search[100];
+    
+    // Open the CSV file named "example.csv" in read mode
     fp = fopen("example.csv", "r");
-    if(!fp){ perror("Error"); return 1; }
+    if (!fp) {
+        perror("Error");
+        return 1;
+    }
+    
+    // Read the header line of the csv
     fgets(buffer, 1024, fp);
+    
+    // Prompt the user
     printf("Enter column number: ");
     scanf("%d", &colnum);
+    
+    // Prompt the user for the search value
     printf("Enter search value: ");
     scanf("%s", search);
-    while(fgets(buffer, 1024, fp)){
+    
+    // Process each subsequent line
+    while (fgets(buffer, 1024, fp)) {
+        // Duplicate the line for tokenization
         char *temp = strdup(buffer);
+
         int current = 1, found = 0;
+        
+        // Tokenize the csv line
         char *token = strtok(temp, ",");
-        while(token){
-            if(current == colnum){
-                if(strcmp(token, search) == 0 || strstr(token, search)){ found = 1; }
+        while (token) {
+            if (current == colnum) {
+                // Compare token against the search term
+                if (strcmp(token, search) == 0 || strstr(token, search))
+                    found = 1;
+                // Exit the loop
                 break;
             }
+            // Move to the next token 
             token = strtok(NULL, ",");
             current++;
         }
-        if(found) printf("%s", buffer);
+        
+        // If a match is found, print the entire line
+        if (found)
+            printf("%s", buffer);
+
         free(temp);
     }
+    
+    // Close the file
     fclose(fp);
     return 0;
 }

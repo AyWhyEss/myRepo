@@ -2,98 +2,154 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/time.h>
+
+// Global variables to store matrix dimensions
+// M-Number of rows in matrix A and C
+// N-Number of columns in matrix A and rows in matrix B
+// P-Number of columns in matrix B and C
 int M, N, P;
+
+// Global pointers for matrices, represented as arrays of pointers
 int **A, **B, **C;
-typedef struct { int row; } thread_data;
-void *multiply_row(void *arg){
+
+// Structure to pass row information to each thread
+typedef struct { 
+    int row; // The specific row of matrix A and C to be processed
+} thread_data;
+
+// Thread function to compute one row of the result matrix C
+void *multiply_row(void *arg) {
+    // Convert the generic pointer
     thread_data *data = (thread_data*) arg;
-    int i = data->row;
+    int i = data->row; // Determine which row to process
+
+    // Use gettimeofday to measure execution time with high resolution.
     struct timeval start, end;
-    gettimeofday(&start, NULL);
-    for(int j = 0; j < P; j++){
-        C[i][j] = 0;
-        for(int k = 0; k < N; k++){
+    gettimeofday(&start, NULL);  // Capture start time 
+    
+    // For each column in matrix B, calculate the dot product with the row from A
+    for (int j = 0; j < P; j++) {
+        C[i][j] = 0; // Initialize the cell to zero
+        // Perform the dot product
+        for (int k = 0; k < N; k++) {
             C[i][j] += A[i][k] * B[k][j];
         }
     }
+    
+    // Capture the end time
     gettimeofday(&end, NULL);
+    
+    // Calculate elapsed time in milliseconds
     long sec = end.tv_sec - start.tv_sec;
     long usec = end.tv_usec - start.tv_usec;
     double elapsed = sec * 1000.0 + usec / 1000.0;
+    
+    // Output the time taken by this thread
     printf("Thread for row %d took %f ms\n", i, elapsed);
+    
+    // End the thread explicitly.
     pthread_exit(NULL);
 }
-int main(void){
+
+int main(void) {
+    // Request the matrix dimensions from the user
     printf("Enter M, N, P: ");
     scanf("%d %d %d", &M, &N, &P);
+
+    // Dynamically allocate memory for matrices A (M x N), B (N x P), and C (M x P)
     A = malloc(M * sizeof(int*));
     B = malloc(N * sizeof(int*));
     C = malloc(M * sizeof(int*));
-    for(int i = 0; i < M; i++){
-        A[i] = malloc(N * sizeof(int));
-        C[i] = malloc(P * sizeof(int));
+    for (int i = 0; i < M; i++) {
+        A[i] = malloc(N * sizeof(int)); // Allocate memory for each row in A.
+        C[i] = malloc(P * sizeof(int)); // Allocate memory for each row in C.
     }
-    for(int i = 0; i < N; i++){
-        B[i] = malloc(P * sizeof(int));
+    for (int i = 0; i < N; i++) {
+        B[i] = malloc(P * sizeof(int)); // Allocate memory for each row in B.
     }
-    for(int i = 0; i < M; i++){
-        for(int j = 0; j < N; j++){
+
+    // Initialize matrix A with random values (0 to 9)
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < N; j++) {
             A[i][j] = rand() % 10;
         }
     }
-    for(int i = 0; i < N; i++){
-        for(int j = 0; j < P; j++){
+    // Similarly, initialize matrix B with random values
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < P; j++) {
             B[i][j] = rand() % 10;
         }
     }
+
+    // Allocate memory 
     pthread_t *threads = malloc(M * sizeof(pthread_t));
     thread_data *tdata = malloc(M * sizeof(thread_data));
+
+    // Record the starting time
     struct timeval start_par, end_par;
     gettimeofday(&start_par, NULL);
-    for(int i = 0; i < M; i++){
-        tdata[i].row = i;
+
+    // Create one thread per row of matrix A.
+    for (int i = 0; i < M; i++) {
+        tdata[i].row = i; // Pass the current row number to the thread.
         pthread_create(&threads[i], NULL, multiply_row, &tdata[i]);
     }
-    for(int i = 0; i < M; i++){
+
+    // Wait for all threads to complete their computation
+    for (int i = 0; i < M; i++) {
         pthread_join(threads[i], NULL);
     }
+    
+    // Record the end time after all
     gettimeofday(&end_par, NULL);
     long sec_par = end_par.tv_sec - start_par.tv_sec;
     long usec_par = end_par.tv_usec - start_par.tv_usec;
     double elapsed_par = sec_par * 1000.0 + usec_par / 1000.0;
     printf("Parallel multiplication took %f ms\n", elapsed_par);
+
+    // For comparison, perform sequential matrix multiplication
     int **C_seq = malloc(M * sizeof(int*));
-    for(int i = 0; i < M; i++){
+    for (int i = 0; i < M; i++) {
         C_seq[i] = malloc(P * sizeof(int));
     }
+
+    // Record the start time for seq...
     struct timeval start_seq, end_seq;
     gettimeofday(&start_seq, NULL);
-    for(int i = 0; i < M; i++){
-        for(int j = 0; j < P; j++){
-            C_seq[i][j] = 0;
-            for(int k = 0; k < N; k++){
+    
+    // Multiply matrices in a single thread
+    for (int i = 0; i < M; i++) {
+        for (int j = 0; j < P; j++) {
+            C_seq[i][j] = 0; // Initialize each cell.
+            for (int k = 0; k < N; k++) {
                 C_seq[i][j] += A[i][k] * B[k][j];
             }
         }
     }
+    
+    // End time
     gettimeofday(&end_seq, NULL);
     long sec_seq = end_seq.tv_sec - start_seq.tv_sec;
     long usec_seq = end_seq.tv_usec - start_seq.tv_usec;
     double elapsed_seq = sec_seq * 1000.0 + usec_seq / 1000.0;
     printf("Sequential multiplication took %f ms\n", elapsed_seq);
-    for(int i = 0; i < M; i++){
-        free(A[i]);
-        free(C[i]);
-        free(C_seq[i]);
+
+    // Free dynamics 
+    for (int i = 0; i < M; i++) {
+        free(A[i]);      // Free raws
+        free(C[i]);      
+        free(C_seq[i]); 
     }
-    for(int i = 0; i < N; i++){
-        free(B[i]);
+    for (int i = 0; i < N; i++) {
+        free(B[i]);      // Free each row of B, next step free others
     }
-    free(A);
-    free(B);
-    free(C);
-    free(C_seq);
-    free(threads);
-    free(tdata);
+    free(A);  
+    free(B);     
+    free(C);    
+    free(C_seq);  
+    free(threads); 
+    free(tdata);  
+
+    // Out
     return 0;
 }
