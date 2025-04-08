@@ -1,0 +1,64 @@
+#include <stdio.h>
+
+/* Define the states */
+typedef enum {
+    LOCKED,
+    UNLOCKED
+} SubwayState;
+
+/* Define possible events */
+typedef enum {
+    CARD_SWIPED,
+    PASS_THROUGH,
+    TIMEOUT
+} SubwayEvent;
+
+/* Function to do with transportation things */
+SubwayState handle_subway_transition(SubwayState currentState, SubwayEvent event) {
+    switch(currentState) {
+        case LOCKED:
+            /* If locked and a card is swiped, unlock it */
+            if(event == CARD_SWIPED) {
+                printf("Event: CARD_SWIPED -> Transition to UNLOCKED\n");
+                return UNLOCKED;
+            }
+            /* If anything else happen, LOCKED */
+            printf("Event: NO VALID TRANSITION, Remain LOCKED\n");
+            return LOCKED;
+
+        case UNLOCKED:
+            /* If unlocked and passenger passes, lock again */
+            if(event == PASS_THROUGH) {
+                printf("Event: PASS_THROUGH -> Transition to LOCKED\n");
+                return LOCKED;
+            }
+            /* If unlocked but time is up, lock again */
+            else if(event == TIMEOUT) {
+                printf("Event: TIMEOUT -> Transition to LOCKED\n");
+                return LOCKED;
+            }
+            /* If a card is swiped again, ignore */
+            printf("Event: CARD_SWIPED or Other -> Remain UNLOCKED\n");
+            return UNLOCKED;
+
+        default:
+            return currentState;
+    }
+}
+
+int main(void) {
+    /* Initial state: LOCKED */
+    SubwayState currentState = LOCKED;
+
+    /* Simulate */
+    SubwayEvent events[] = {CARD_SWIPED, PASS_THROUGH, CARD_SWIPED, CARD_SWIPED, TIMEOUT, PASS_THROUGH};
+    int numberOfEvents = sizeof(events)/sizeof(events[0]);
+
+    for(int i = 0; i < numberOfEvents; i++) {
+        printf("Current State: %s\n", (currentState == LOCKED) ? "LOCKED" : "UNLOCKED");
+        currentState = handle_subway_transition(currentState, events[i]);
+        printf("New State: %s\n\n", (currentState == LOCKED) ? "LOCKED" : "UNLOCKED");
+    }
+
+    return 0;
+}
